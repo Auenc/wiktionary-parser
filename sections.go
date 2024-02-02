@@ -71,3 +71,19 @@ func getLanguageSections(pageSource string) ([]LanguageSection, error) {
 
 	return languageSections, nil
 }
+
+func getSectionMap(source string, selector string) (map[string]string, error) {
+	sections := make(map[string]string)
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(source))
+	if err != nil {
+		return sections, err
+	}
+
+	sectionHeadings := doc.Find(selector)
+
+	sectionNames := make([]string, 0)
+	sectionIndexes := make([]int, 0)
+
+	return sections, nil
+}

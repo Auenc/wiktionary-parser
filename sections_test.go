@@ -89,3 +89,23 @@ func TestGetLanguageSection(t *testing.T) {
 		})
 	}
 }
+
+func TestGetSectionMap(t *testing.T) {
+	angenMap, err := loadWordTestData("angen")
+	assert.Nil(t, err)
+
+	tests := []struct {
+		name     string
+		expected map[string]string
+	}{
+		{
+			name: "language sections"
+		}
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+
+		})
+	}
+}
