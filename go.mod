@@ -2,8 +2,9 @@ module github.com/auenc/wiktionary-parser
 
 go 1.21.5
 
+require github.com/PuerkitoBio/goquery v1.8.1
+
 require (
-	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/antchfx/htmlquery v1.3.0 // indirect
 	github.com/antchfx/xmlquery v1.3.18 // indirect
