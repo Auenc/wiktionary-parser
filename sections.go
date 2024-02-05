@@ -9,8 +9,9 @@ import (
 )
 
 type LanguageSection struct {
-	Name string
-	Html string
+	Name        string
+	Html        string
+	Subsections map[string]string
 }
 
 func getLanguageSections(pageSource string) ([]LanguageSection, error) {
@@ -32,10 +33,15 @@ func getLanguageSections(pageSource string) ([]LanguageSection, error) {
 		return languageSections, err
 	}
 
-	for name, html := range sectionMap {
+	for name, sectionHtml := range sectionMap {
+		subsectionMap, err := getSectionMap(html.UnescapeString(sectionHtml), "h3", "span.mw-headline")
+		if err != nil {
+			return languageSections, err
+		}
 		section := LanguageSection{
-			Name: name,
-			Html: html,
+			Name:        name,
+			Html:        sectionHtml,
+			Subsections: subsectionMap,
 		}
 		languageSections = append(languageSections, section)
 	}
@@ -67,9 +73,9 @@ func getSectionMap(source string, headingTag, selector string) (map[string]strin
 			return false
 		}
 		unescapedNameHtml := html.UnescapeString(sectionNameHtml)
-		languageStart := strings.Index(source, fmt.Sprintf("<h2>%s</h2>", unescapedNameHtml))
+		languageStart := strings.Index(source, fmt.Sprintf("<%s>%s</%s>", headingTag, unescapedNameHtml, headingTag))
 		if languageStart == -1 {
-			err = fmt.Errorf("could not find starting index of language section: %s\nsearching: %s", sectionName, unescapedNameHtml)
+			err = fmt.Errorf("could not find starting index of section: %s\nsearching: %s", sectionName, unescapedNameHtml)
 			return false
 		}
 		sectionIndexes = append(sectionIndexes, languageStart)

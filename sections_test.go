@@ -44,49 +44,9 @@ func loadWordTestData(word string) (wordSectionTest, error) {
 	return sectionTest, nil
 }
 
-func TestGetLanguageSection(t *testing.T) {
-	angenFull, err := loadWordTestData("angen")
-	assert.Nil(t, err)
-	tests := []struct {
-		name     string
-		source   wordSectionTest
-		expected []LanguageSection
-	}{
-		{
-			name:   "angen",
-			source: angenFull,
-			expected: []LanguageSection{
-				{
-					Name: "balinese",
-					Html: angenFull.sections["balinese"],
-				},
-				{
-					Name: "javanese",
-					Html: angenFull.sections["javanese"],
-				},
-				{
-					Name: "sundanese",
-					Html: angenFull.sections["sundanese"],
-				},
-				{
-					Name: "welsh",
-					Html: angenFull.sections["welsh"],
-				},
-			},
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(tt *testing.T) {
-			result, err := getLanguageSections(test.source.sections["source"])
-			assert.Nil(t, err)
-			assert.Equal(t, len(test.expected), len(result))
-			assert.ElementsMatch(t, test.expected, result)
-		})
-	}
-}
-
 func TestGetSectionMap(t *testing.T) {
+	angenSubSectionMap, err := loadWordTestData("angen/welsh-subsections")
+	assert.Nil(t, err)
 	angenMap, err := loadWordTestData("angen")
 	assert.Nil(t, err)
 
@@ -96,6 +56,11 @@ func TestGetSectionMap(t *testing.T) {
 			continue
 		}
 		angenExpectedSections[sectionName] = sectionData
+	}
+
+	angenExpectedSubSections := make(map[string]string)
+	for subName, subData := range angenSubSectionMap.sections {
+		angenExpectedSubSections[subName] = subData
 	}
 
 	tests := []struct {
@@ -118,6 +83,13 @@ func TestGetSectionMap(t *testing.T) {
 			selector: "span.mw-headline",
 			input:    angenMap.sections["section-container"],
 			expected: angenExpectedSections,
+		},
+		{
+			name:     "can pull the welsh language subsections",
+			tag:      "h3",
+			selector: "span.mw-headline",
+			input:    angenMap.sections["welsh"],
+			expected: angenExpectedSubSections,
 		},
 	}
 
