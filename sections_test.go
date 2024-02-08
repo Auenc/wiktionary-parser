@@ -6,16 +6,17 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/auenc/wiktionary-parser/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-type wordSectionTest struct {
+type WordSectionTest struct {
 	word     string
 	sections map[string]string
 }
 
-func loadWordTestData(word string) (wordSectionTest, error) {
-	sectionTest := wordSectionTest{
+func LoadWordTestData(word string) (WordSectionTest, error) {
+	sectionTest := WordSectionTest{
 		word: word,
 	}
 	testDir := fmt.Sprintf("testdata/%s", word)
@@ -33,7 +34,7 @@ func loadWordTestData(word string) (wordSectionTest, error) {
 		filePath := file.Name()
 		fileNameWithExt := strings.ReplaceAll(filePath, testDir, "")
 		fileName := strings.ReplaceAll(fileNameWithExt, ".html", "")
-		fileContent, err := loadStringFromFile(fmt.Sprintf("%s/%s", testDir, filePath))
+		fileContent, err := utils.LoadStringFromFile(fmt.Sprintf("%s/%s", testDir, filePath))
 		if err != nil {
 			return sectionTest, err
 		}
@@ -43,11 +44,10 @@ func loadWordTestData(word string) (wordSectionTest, error) {
 
 	return sectionTest, nil
 }
-
 func TestGetSectionMap(t *testing.T) {
-	angenSubSectionMap, err := loadWordTestData("angen/welsh-subsections")
+	angenSubSectionMap, err := LoadWordTestData("angen/welsh-subsections")
 	assert.Nil(t, err)
-	angenMap, err := loadWordTestData("angen")
+	angenMap, err := LoadWordTestData("angen")
 	assert.Nil(t, err)
 
 	angenExpectedSections := make(map[string]string)
