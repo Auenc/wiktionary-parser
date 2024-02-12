@@ -104,3 +104,60 @@ func TestGetSectionMap(t *testing.T) {
 		})
 	}
 }
+
+func TestSplitBySelection(t *testing.T) {
+	angenSubSectionMap, err := LoadWordTestData("angen/welsh-subsections")
+	assert.Nil(t, err)
+	tests := []struct {
+		name                   string
+		inputHtml              string
+		inputSelector          string
+		inputContainerSelector string
+		output                 []string
+		expectedError          error
+	}{
+		{
+			name:                   "basic",
+			inputHtml:              `<p>name: <span>bob</span>name: <span>joe</span>name: <span>jeff</span></p>`,
+			inputSelector:          "span",
+			inputContainerSelector: "p",
+			output: []string{
+				"name: <span>bob</span>",
+				"name: <span>joe</span>",
+				"name: <span>jeff</span>",
+			},
+		},
+		{
+			name:                   "deeper structure",
+			inputHtml:              "<div><div>some header div</div><p>name: <span>bob</span>name: <span>joe</span>name: <span>jeff</span></p></div>",
+			inputSelector:          "span",
+			inputContainerSelector: "p",
+			output: []string{
+				"name: <span>bob</span>",
+				"name: <span>joe</span>",
+				"name: <span>jeff</span>",
+			},
+		},
+		{
+			name:                   "can split etymology of welsh angen",
+			inputHtml:              angenSubSectionMap.sections["etymology"],
+			inputContainerSelector: "p",
+			inputSelector:          "i.mention",
+			output: []string{
+				`From <span class="etyl"><a href="https://en.wikipedia.org/wiki/Middle_Welsh" class="extiw" title="w:Middle Welsh">Middle Welsh</a></span> <i class="Latn mention" lang="wlm"><a href="/wiki/aghen#Middle_Welsh" title="aghen">aghen</a></i>`,
+				`, from <span class="etyl"><a href="https://en.wikipedia.org/wiki/Brittonic_languages" class="extiw" title="w:Brittonic languages">Proto-Brythonic</a></span> <i class="Latn mention" lang="cel-bry-pro"><a href="/w/index.php?title=Reconstruction:Proto-Brythonic/anken&action=edit&redlink=1" class="new" title="Reconstruction:Proto-Brythonic/anken (page does not exist)">*anken</a></i>`,
+				` (compare <span class="etyl"><a href="https://en.wikipedia.org/wiki/Cornish_language" class="extiw" title="w:Cornish language">Cornish</a></span> and <span class="etyl"><a href="https://en.wikipedia.org/wiki/Breton_language" class="extiw" title="w:Breton language">Breton</a></span> <i class="Latn mention" lang="br"><a href="/wiki/anken#Breton" title="anken">anken</a></i>`,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			results, err := splitBySelection(test.inputHtml, test.inputSelector, test.inputContainerSelector)
+			assert.Equal(t, test.expectedError, err)
+			for i, expected := range test.output {
+				assert.Equal(t, expected, results[i])
+			}
+		})
+	}
+}

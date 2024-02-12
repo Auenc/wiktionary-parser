@@ -1,4 +1,4 @@
-package details
+package wikitionaryparser
 
 type Detail interface {
 	Name() string

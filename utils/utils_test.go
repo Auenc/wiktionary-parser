@@ -19,7 +19,7 @@ func LoadWordTestData(word string) (WordSectionTest, error) {
 	sectionTest := WordSectionTest{
 		word: word,
 	}
-	testDir := fmt.Sprintf("testdata/%s", word)
+	testDir := fmt.Sprintf("../testdata/%s", word)
 	files, err := os.ReadDir(testDir)
 	if err != nil {
 		return sectionTest, err
@@ -45,7 +45,7 @@ func LoadWordTestData(word string) (WordSectionTest, error) {
 	return sectionTest, nil
 }
 
-func TeststringFromSelector(t *testing.T) {
+func TestStringFromSelector(t *testing.T) {
 	angenMap, err := LoadWordTestData("angen")
 	assert.Nil(t, err)
 	tests := []struct {
@@ -74,5 +74,28 @@ func TeststringFromSelector(t *testing.T) {
 		result, err := StringFromSelector(test.selector, test.input)
 		assert.Equal(t, test.expectedError, err)
 		assert.Equal(t, test.output, result)
+	}
+}
+
+func TestRemoveChildTextNodes(t *testing.T) {
+	tests := []struct {
+		name          string
+		input         string
+		output        string
+		expectedError error
+	}{
+		{
+			name:   "basic",
+			input:  "<span>hello</span>world",
+			output: "<span>hello</span>",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := RemoveChildTextNodes(test.input)
+			assert.Equal(t, test.expectedError, err)
+			assert.Equal(t, test.output, result)
+		})
 	}
 }

@@ -1,7 +1,6 @@
-package details
+package wikitionaryparser
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +26,6 @@ func TestRomanizationFromSection(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		fmt.Println("hellp", test.input)
 		result, err := romanizationFromSection(test.input)
 		assert.Equal(t, test.expectedError, err)
 		assert.Equal(t, test.output, result)

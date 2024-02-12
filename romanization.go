@@ -1,11 +1,10 @@
-package details
+package wikitionaryparser
 
 import (
 	"errors"
 	"fmt"
-	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/auenc/wiktionary-parser/utils"
 )
 
 type Romanization struct {
@@ -20,7 +19,7 @@ func (r Romanization) Name() string {
 func romanizationFromSection(section string) (Romanization, error) {
 	rom := Romanization{}
 
-	romSection, err := goquery.NewDocumentFromReader(strings.NewReader(section))
+	romSection, err := utils.QueryDocFromstring(section)
 	if err != nil {
 		return rom, err
 	}
